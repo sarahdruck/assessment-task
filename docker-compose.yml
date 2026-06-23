@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # 1. שירות בסיס הנתונים (PostgreSQL)
+  # 1.PostgreSQL
   postgres_db:
     image: postgres:15-alpine
     environment:
@@ -13,10 +13,10 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  # 2. שירות האפליקציה שלך (Node.js)
+  # 2. שירות האפליקציה Node.js
   app_service:
     build: .
-    # הווספנו את הפקודה הזו כאן כדי שהטבלאות ייווצרו אוטומטית לפני הרצת הקוד
+    # הוספתי את הפקודה הזו כאן כדי שהטבלאות ייווצרו אוטומטית לפני הרצת הקוד
     command: sh -c "npx prisma db push && node main.js"
     environment:
       - DATABASE_URL=postgresql://user_admin:secret_password@postgres_db:5432/game_db?schema=public
