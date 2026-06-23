@@ -7,7 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Enums לשדות סטטוס ותפקיד (דרישה מהמשימה)
 enum GameStatus {
   Waiting
   Live
@@ -19,7 +18,7 @@ enum ParticipantRole {
   Spectator
 }
 
-// 1. מודל משתמש במערכת
+//מודל משתמש במערכת
 model User {
   id           String            @id @default(uuid())
   username     String            @unique
@@ -27,7 +26,7 @@ model User {
   participants GameParticipant[]
 }
 
-// 2. ישות המייצגת משחק
+// ישות המייצגת משחק
 model Game {
   id           String            @id @default(uuid())
   status       GameStatus        @default(Waiting)
@@ -44,10 +43,9 @@ model GameParticipant {
   score     Int             @default(0)
   joinedAt  DateTime        @default(now())
 
-  // הגדרת הקשרים (Relations)
+  
   user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   game      Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
-  // הגדרה שמונעת ממשתמש להירשם פעמיים לאותו משחק
   @@unique([userId, gameId])
 }
