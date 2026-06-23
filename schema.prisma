@@ -1,0 +1,53 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Enums לשדות סטטוס ותפקיד (דרישה מהמשימה)
+enum GameStatus {
+  Waiting
+  Live
+  Finished
+}
+
+enum ParticipantRole {
+  Player
+  Spectator
+}
+
+// 1. מודל משתמש במערכת
+model User {
+  id           String            @id @default(uuid())
+  username     String            @unique
+  createdAt    DateTime          @default(now())
+  participants GameParticipant[]
+}
+
+// 2. ישות המייצגת משחק
+model Game {
+  id           String            @id @default(uuid())
+  status       GameStatus        @default(Waiting)
+  createdAt    DateTime          @default(now())
+  participants GameParticipant[]
+}
+
+// 3. טבלת קשר המנהלת את המשתתפים, תפקידם והניקוד
+model GameParticipant {
+  id        String          @id @default(uuid())
+  userId    String
+  gameId    String
+  role      ParticipantRole @default(Player)
+  score     Int             @default(0)
+  joinedAt  DateTime        @default(now())
+
+  // הגדרת הקשרים (Relations)
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game      Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  // הגדרה שמונעת ממשתמש להירשם פעמיים לאותו משחק
+  @@unique([userId, gameId])
+}
